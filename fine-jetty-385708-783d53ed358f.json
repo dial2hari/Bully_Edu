@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "fine-jetty-385708",
+  "private_key_id": "783d53ed358fade6e11446fd258d915634d2c805",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDGCwgEDBXjWwAj\nVmx7VYDasAANRCF8olxYtBwOyt1Nxr39Cmr4twK+OZVBBL55ud30EuYzOMiwHWNe\nfjlqDQgH9CYVZpdWPhFIwHnikX+aRN/oeRdUb/u+J4YassMcMWWrhUn1jbbe3EPa\nNO+7dACEk3H1wdjDdy1MvJSA4evn4jLsRyFWla+ru5XU2Kwi0Arq/1Z6klKJ3Ox2\nVAhG+gNjE+aMn8tktLaz0RoTlhrQWoqP9Xfehfsnts4nS6RpUb6Ie3FqQr7EsX2W\n3cWopbIAVjVtSgtH3pY6TcUSRehCXRbmtl55i/SG5fvl0trmIRAuTo2+33+dUwEr\nY642t3NdAgMBAAECggEACLxLZyZMdt1dFR+rJFJrQ7EKcK/vJ6HfxDNQel/9HJMT\n3Lm4jqT2yzmuAoBm/1RDbyKbtLLXJ+z77eQHBZZykHRkk6bwv9Uu5iKNncnlDl4v\nOxKHKWpjZq59e+eRalsDurMIfOjV2PLdUDDHJXP00HaJXT5CMxtPAyaUUg4uOQ47\nFh4QuMmaqYj3wosZ2/D0LtzseKKwfEkn7NolpxGfAJLmhXIl4yHk9Mm4sYrfV8GS\nFMI1aJX06uOv6rj3TICqQBsDHkcw2WDNDonAWgYNTmaYaHUEDXPm/7ivwN+DMhWj\ntK1tG1dtucfBugQzYFcjWMBIx482N8uuFPe9h6PqjwKBgQDxU2Msqe5vdB5oOZgN\n29EEs2MMRVAh3NfiNnme3ASL/sUvKsf4VH8H7NXF1YcwzWuFZI79YPGEShRqw56k\nnPlz+3MQZ/y7spBG1YigjYdJA0HPjF1DhGXEooEhVzLeLMu+ZjsbVeHUHJSlf3sw\n7dAkXwk/Kpqhdk37taNNRehEhwKBgQDSFeHDK9scpJJ33fYC183IIscG7++GHeet\nYkBSX7G1HJJ0RpckUKeIwEeqw8e5aE7IsZiGGNumwdmGpKST+4lUW1dtlwWzrFOD\nitE6z0prTTUXrys3+YVqx5qWhi0DH7jfmxgKUzqz+Jr/Xju1VVNB9dniYeSzobMM\nEdfQnzVl+wKBgQCfSNPn8g3QAMvlLUagtxtCSAkzWzil8TeJNz2VTlGt+a47ELjG\nvzbNi1QabXL7EktK03HR6j/femn5gj7fFkFMfYaYKJrXZOf36Q9yMZg+5+hzTols\nfCIT5NLop76KiPS+KooO4+PX9jli9z7fr8g3iYb3623+7rBQWLZ91YuWVwKBgQDD\nyqzrDjZYzW/L0srx/1nDSdYfOwIKBljimAzGOHUQC57aSueVaq2Yn0qrdWbv/qxe\nElXJs+UR1tv5xfu0BtsICVDDy9n+h34VvAwfOQ1sTzpJ5nDq69tRltEVs9rDbI8J\npiuTg9nT3L/ne1U+PFUpxgzYFM/mMa8CcqalwZssfQKBgC6vSPiqPauhBTqxJIci\nSYA3rd+wrBl/BJtlHeo1wBCXD3p70gX3HpqHp9AxkZgsBP3e96t3gXRsOIMostaw\nO9n1/Jvmq0F2cm9yCJOXoUzEaPqzmMOk5Y8BXoBf6nMYQowj0TAO31u1TrdPYoGI\nl3IQDcY5enjKklejD3IUFRh/\n-----END PRIVATE KEY-----\n",
+  "client_email": "bullyedu-toxicityidentificatio@fine-jetty-385708.iam.gserviceaccount.com",
+  "client_id": "105423271269843538722",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bullyedu-toxicityidentificatio%40fine-jetty-385708.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

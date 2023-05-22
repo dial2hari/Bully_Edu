@@ -1,0 +1,14 @@
+name: new_bully_edu
+title:
+username:
+account: hari-lakshmanan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9108186
+bundleId: 7236148
+url: https://hari-lakshmanan.shinyapps.io/new_bully_edu/
+when: 1684458655.36615
+lastSyncTime: 1684458655.36622
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app.py|att_agg_tox.R|classifier_agg.pkl|classifier_att.pkl|classifier_tox.pkl|data_modeling.Rmd|fine-jetty-385708-783d53ed358f.json|toxic-text-detection-master.zip|train.py|Untitled.R|epic3

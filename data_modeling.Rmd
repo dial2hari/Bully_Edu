@@ -1,0 +1,363 @@
+---
+title: "Data_Modelling"
+author: "Hari Harasudhan Lakhmanan"
+date: "2023-05-15"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r}
+# install.packages('randomForest')
+# install.packages('wordnet')
+# install.packages('creditmodel')
+# install.packages('superml', dependencies=TRUE)
+# install.packages('reticulate')
+# install.packages('caret')
+# install.packages('tokenizers')
+# install.packages('stopwords')
+install.packages('gutenberg_corpus')
+```
+
+Importing Libraries
+```{r}
+require(xgboost)
+require(tidyverse)
+require(ggplot2)
+require(shiny)
+require(e1071)
+require(glmnet)
+require(stats)
+require(randomForest)
+require(zoo)
+require(igraph)
+require(webshot)
+require(htmlwidgets)
+require(creditmodel)
+require(wordnet)
+require(superml)
+require(reticulate)
+require(caret)
+require(tokenizers)
+require(stopwords)
+require(gutenberg_corpus)
+```
+Loading the databases
+```{r}
+att_df <- read_csv("data/att_dataset.csv")
+agg_df <- read_csv("data/agg_dataset.csv")
+tox_df <- read_csv("data/tox_dataset.csv")
+
+View(att_df)
+View(agg_df)
+View(tox_df)
+```
+
+Dropping columns from all the datasets
+```{r}
+# att_df <- subset(att_df,select = c('Text','ed_label_1'))
+# agg_df <- subset(agg_df,select = c('Text','ed_label_1'))
+# tox_df <- subset(tox_df,select = c('Text','ed_label_1'))
+```
+
+Changing the datatype of the columns
+```{r}
+att_df <- transform(att_df, Prob_attack = as.factor(round(Prob_attack,digits=1)))
+agg_df <- transform(agg_df, Prob_aggression = as.factor(round(Prob_aggression,digits=1)))
+tox_df <- transform(tox_df, Prob_toxicity = as.factor(round(Prob_toxicity,digits=1)))
+
+sapply(att_df,class)
+sapply(agg_df,class)
+sapply(tox_df,class)
+```
+
+Removing the rows with NA values
+```{r}
+att_df <- na.omit(att_df)
+agg_df <- na.omit(agg_df)
+tox_df <- na.omit(tox_df)
+
+att_df <- subset(att_df, select = -c(...1))
+agg_df <- subset(agg_df, select = -c(...1))
+tox_df <- subset(tox_df, select = -c(...1))
+```
+
+
+```{r}
+
+data = 'You are a bastard'
+data <- gutenberg_corpus(55, verbose = FALSE)
+text_filter(data)$stemmer <-
+    with(affect_wordnet,
+        new_stemmer(term, interaction(category, emotion),
+                    default = NA, duplicates = "omit"))
+```
+
+Text Pre-processing
+```{r}
+# att_df$Text <- gsub('[^[:alnum:]]','',att_df$Text)
+# agg_df$Text <- gsub('[^[:alnum:]]','',agg_df$Text)
+# tox_df$Text <- gsub('[^[:alnum:]]','',tox_df$Text)
+# att_df$Text <- gsub('\.[0−9]*$','',att_df$Text)
+# agg_df$Text <- gsub('\.[0−9]*$','',agg_df$Text)
+# tox_df$Text <- gsub('\.[0−9]*$','',tox_df$Text)
+# att_df$Text <- gsub('[/\t/\n]','',att_df$Text)
+# agg_df$Text <- gsub('[/\t/\n]','',agg_df$Text)
+# tox_df$Text <- gsub('[/\t/\n]','',tox_df$Text)
+```
+
+Sampling
+```{r}
+att_samp <- att_df[sample(nrow(att_df),1000),]
+agg_samp <- agg_df[sample(nrow(agg_df),1000),]
+tox_samp <- tox_df[sample(nrow(tox_df),1000),]
+```
+
+
+```{r}
+nrow(att_samp)
+nrow(agg_samp)
+nrow(tox_samp)
+```
+
+Train and test data split
+```{r}
+att_train_test <- train_test_split(
+  att_samp,
+  prop = 0.7,
+  split_type = "Random",
+  seed = 1234)
+
+
+
+agg_train_test <- train_test_split(
+  agg_samp,
+  prop = 0.7,
+  split_type = "Random",
+  seed = 1234)
+
+
+
+tox_train_test <- train_test_split(
+  tox_samp,
+  prop = 0.7,
+  split_type = "Random",
+  seed = 1234)
+
+
+```
+
+Training and Testing datasets
+```{r}
+train_att <- att_train_test$train
+test_att <- att_train_test$test
+train_agg <- agg_train_test$train
+test_agg <- agg_train_test$test
+train_tox <- tox_train_test$train
+test_tox <- tox_train_test$test
+```
+
+Applying tfidf vectorizer 
+```{r}
+# initialise the class
+tfv_att <- TfIdfVectorizer$new()
+tfv_agg <- TfIdfVectorizer$new()
+tfv_tox <- TfIdfVectorizer$new()
+
+# generate the matrix
+tfv_att$fit(train_att$tokenized_text)
+tfv_agg$fit(train_agg$tokenized_text)
+tfv_tox$fit(train_tox$tokenized_text)
+
+#Fitting 
+tfv_att_train <- tfv_att$transform(train_att$tokenized_text)
+tfv_att_test <- tfv_att$transform(test_att$tokenized_text)
+
+tfv_agg_train <- tfv_agg$transform(train_agg$tokenized_text)
+tfv_agg_test <- tfv_agg$transform(test_agg$tokenized_text)
+
+tfv_tox_train <- tfv_tox$transform(train_tox$tokenized_text)
+tfv_tox_test <- tfv_tox$transform(test_tox$tokenized_text)
+
+```
+
+Using Support Vector Classifier to train and fit the model to the training datasets
+```{r}
+svc_att <- svm(train_att$Prob_attack ~ tfv_att_train,cost=0.5, cross=5)
+svc_agg <- svm(train_agg$Prob_aggression ~ tfv_agg_train,cost=0.5, cross=5)
+svc_tox <- svm(train_tox$Prob_toxicity ~ tfv_tox_train,cost=0.5, cross=5)
+
+```
+
+```{r}
+preds_att <- predict(svc_att, tfv_att_test)
+preds_agg <- predict(svc_agg, tfv_agg_test)
+preds_tox <- predict(svc_tox, tfv_tox_test)
+preds_tox
+```
+Text pre-processing
+```{r}
+# att_df$Text <- gsub('[^[:alnum:]]','',att_df$Text)
+# agg_df$Text <- gsub('[^[:alnum:]]','',agg_df$Text)
+# tox_df$Text <- gsub('[^[:alnum:]]','',tox_df$Text)
+# att_df$Text <- gsub('\.[0−9]*$','',att_df$Text)
+# agg_df$Text <- gsub('\.[0−9]*$','',agg_df$Text)
+# tox_df$Text <- gsub('\.[0−9]*$','',tox_df$Text)
+# att_df$Text <- gsub('[/\t/\n]','',att_df$Text)
+# agg_df$Text <- gsub('[/\t/\n]','',agg_df$Text)
+# tox_df$Text <- gsub('[/\t/\n]','',tox_df$Text)
+
+```
+
+```{r}
+# confusionMatrix(factor(preds_att),factor(test_att$Prob_attack))
+# confusionMatrix(factor(preds_agg),factor(test_agg$Prob_aggression))
+# confusionMatrix(factor(preds_tox),factor(test_tox$Prob_toxicity))
+
+```
+
+UI Page
+
+```{r}
+ui <- fluidPage(
+  fluidRow(
+    column(4, wellPanel("text",
+                        textInput("bully_text", 
+                                  label = "Enter text here:", 
+                                  value = "", 
+                                  width = 4,
+                                  height = 300,
+                                  placeholder = NULL)
+    )
+    ),
+    column(4, wellPanel("output_plot",
+                        plotlyOutput("bar", 
+                                     height = 300, 
+                                     width = 4,
+                                     placeholder = NULL)
+    )
+  )
+)
+)
+```
+
+Server page
+
+```{r}
+
+server <- function(input,output,session){
+  bar_data <- reactive({
+    # text Pre-processing
+    input <- input$text
+    # input <- tokenize_words(input, stopwords = stopwords::stopwords("en"))
+    # input <- knitr::combine_words(input, and = " ")
+    # input <- knitr::combine_words(input)
+    # 
+    # nrow(input)
+    # input
+    # for (i in input){
+    #   print(i)
+    #   
+    # }
+    input <- input$text
+    input <- as.character(input)
+    input <- data.frame(input)
+    input
+    tf_input <- tf
+    Attacking = predict(svc_att,input)
+    Aggressive = predict(svc_agg,input)
+    Toxic = predict(svc_tox,input)
+    
+    bar_df = data.frame(Attacking[1],Aggressive[1],Toxic[1])
+    
+    bar_df_longer = melt(bar_df,value.name = "value")
+    
+    bar_df %>% plot_ly(x = ~year, y = ~A711, type = 'bar', name = 'A711')
+    filter(shp_df,input$dropdown==LGA_NAME22) %>% 
+      plot_ly(x = ~year, y = ~A711, type = 'bar', name = 'A711') %>% 
+      add_trace(y = ~A712, name = 'A712') %>% 
+      add_trace(y = ~A721, name = 'A721') %>% 
+      add_trace(y = ~A722, name = 'A722') %>% 
+      add_trace(y = ~A731, name = 'A731') %>% 
+      add_trace(y = ~A732, name = 'A732') %>% 
+      layout(yaxis = list(title = 'Cases'), barmode = 'stack')
+  })
+}
+    input <- 'You are stupid'
+    input <- data.frame(input)
+    t
+    Attacking = predict(svc_att,input)
+    Aggressive = predict(svc_agg,input)
+    Toxic = predict(svc_tox,input)
+    Attacking[1]
+    Aggressive
+    Toxic
+```
+
+
+```{r}
+source_python('train.py')
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+## Embedded Application
+
+It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+
+```{r tabsets, echo=FALSE}
+shinyAppDir(
+  system.file("examples/06_tabsets", package = "shiny"),
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+
